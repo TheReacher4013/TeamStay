@@ -1,0 +1,131 @@
+<%- include('../partials/head') %>
+    </head>
+
+    <body>
+        <%- include('../partials/nav') %>
+            <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
+                <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
+                    Details of <%= home.houseName %>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="rounded-lg overflow-hidden">
+                        <img src="<%= home.photo %>" alt="<%= home.name %>" class="w-full h-96 object-cover">
+                    </div>
+                    <div class="space-y-6">
+                        <!-- ...existing details... -->
+                        <div class="border-b pb-4">
+                            <h3 class="text-2xl font-semibold mb-2">Description</h3>
+                            <p class="text-gray-600">
+                                <%= home.description %>
+                            </p>
+                        </div>
+                        <div class="border-b pb-4">
+                            <h3 class="text-2xl font-semibold mb-2">Location</h3>
+                            <p class="text-gray-600">
+                                <%= home.location %>
+                            </p>
+                        </div>
+                        <div class="border-b pb-4">
+                            <h3 class="text-2xl font-semibold mb-2">Price</h3>
+                            <p class="text-green-600 text-xl font-bold">$<%= home.price %> / night</p>
+                        </div>
+                        <div class="border-b pb-4">
+                            <h3 class="text-2xl font-semibold mb-2">Rating</h3>
+                            <div class="flex items-center">
+                                <span class="text-yellow-400 text-xl">★</span>
+                                <span class="ml-2 text-lg">
+                                    <%= home.rating %> / 5
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <%- include('../partials/favourite') %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Form -->
+                <form action="/bookings/book-home" method="POST"
+                    class="bg-gray-100 p-6 rounded shadow mt-10 max-w-md mx-auto" id="bookingForm">
+                    <input type="hidden" name="homeId" value="<%= home._id %>">
+
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1">Name:</label>
+                        <input type="text" name="bookingName" required class="w-full p-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1">Age:</label>
+                        <input type="number" name="bookingAge" min="1" required class="w-full p-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label for="date" class="block font-semibold mb-1">Select Booking Date:</label>
+                        <input type="date" id="date" name="date" required class="w-full p-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label for="guests" class="block font-semibold mb-1">Number of Guests:</label>
+                        <input type="number" id="guests" name="guests" min="1" value="1" required
+                            class="w-full p-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1">Payment Method:</label>
+                        <select name="paymentMethod" id="paymentMethod" required class="w-full p-2 border rounded">
+                            <option value="">Select</option>
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="netbanking">Netbanking</option>
+                            <option value="scanner">Scanner</option>
+                        </select>
+                    </div>
+                    <!-- Card/Netbanking fields -->
+                    <div id="cardFields" class="mb-4 hidden">
+                        <label class="block font-semibold mb-1">Card Number:</label>
+                        <input type="text" name="cardNumber" class="w-full p-2 border rounded mb-2">
+                        <label class="block font-semibold mb-1">CVV:</label>
+                        <input type="password" name="cvv" class="w-full p-2 border rounded mb-2">
+                        <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded w-full mb-2">Pay</button>
+                    </div>
+                    <!-- Scanner field -->
+                    <div id="scannerField" class="mb-4 hidden text-center">
+                        <img src="/images/scanner.png" alt="Scanner" class="mx-auto w-40 h-40 mb-2">
+                        <p class="text-gray-600">Scan this QR code to pay</p>
+                    </div>
+                    <div class="mb-4">
+                        <span class="font-semibold">Total Payment:</span>
+                        <span id="totalPayment" class="text-green-600 font-bold">$<%= home.price %></span>
+                    </div>
+                    <% if (isAvailable) { %>
+                        <button type="submit"
+                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 w-full">Book Now</button>
+                        <% } else { %>
+                            <button type="button"
+                                class="bg-gray-400 text-white px-4 py-2 rounded w-full cursor-not-allowed">Not
+                                Available</button>
+                            <% } %>
+                </form>
+            </main>
+            <script>
+                // Payment fields show/hide
+                const paymentMethod = document.getElementById('paymentMethod');
+                const cardFields = document.getElementById('cardFields');
+                const scannerField = document.getElementById('scannerField');
+                paymentMethod.addEventListener('change', function () {
+                    cardFields.classList.add('hidden');
+                    scannerField.classList.add('hidden');
+                    if (this.value === 'card' || this.value === 'netbanking') {
+                        cardFields.classList.remove('hidden');
+                    }
+                    if (this.value === 'scanner') {
+                        scannerField.classList.remove('hidden');
+                    }
+                });
+
+                // Total payment calculation
+                const pricePerNight = <%- JSON.stringify(home.price)%> ;
+                document.getElementById('guests').addEventListener('input', function () {
+                    const guests = parseInt(this.value) || 1;
+                    document.getElementById('totalPayment').innerText = '$' + (pricePerNight * guests);
+                });
+            </script>
+    </body>
+
+    </html>
