@@ -9,7 +9,7 @@ const { default: mongoose } = require('mongoose');
 
 
 const multer = require('multer');
-const DB_PATH = "mongodb+srv://root:root@completecoding.jyulblf.mongodb.net/airbnb?retryWrites=true&w=majority&appName=CompleteCoding ";
+const DB_PATH = "mongodb+srv://rushi-kesh:rushi123@my-cluster.kpd7p2g.mongodb.net/?appName=my-cluster ";
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
